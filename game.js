@@ -51,7 +51,7 @@ class playGame extends Phaser.Scene {
 
 
     this.target = this.add.image(13 * this.gSize, 0, 'target')
-    this.setTarget(52, 52)
+    this.setTarget(52, 52, 3)
 
 
 
@@ -116,10 +116,10 @@ class playGame extends Phaser.Scene {
       this.player.setVelocityY(300);
     }
   }
-  setTarget(col, row) {
+  setTarget(col, row, distance) {
     var xpos = col * this.gSize
     var ypos = row * this.gSize
-    this.target.setPosition(xpos, ypos)
+    this.target.setPosition(xpos, ypos).setScale(distance)
     var tbound = this.target.getBounds()
     this.rect = new Phaser.Geom.Rectangle(tbound.x, tbound.y, tbound.width, tbound.height)
   }
@@ -154,7 +154,7 @@ class playGame extends Phaser.Scene {
       yoyo: true,
       duration: 100
     })
-    this.sound.play('shot')
+    //this.sound.play('shot')
     this.spot.setAlpha(1)
     this.spot.setPosition(this.player.x, this.player.y)
     if (Phaser.Geom.Rectangle.ContainsPoint(this.rect, this.spot)) {

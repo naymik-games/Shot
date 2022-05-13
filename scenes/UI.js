@@ -15,37 +15,26 @@ class UI extends Phaser.Scene {
     //this.header = this.add.image(game.config.width / 2, game.config.height, 'blank').setOrigin(.5, 1).setTint(0x3e5e71);
     // this.header.displayWidth = 900;
     //this.header.displayHeight = 150;
-    var toggle = 0
-    this.rifle = this.add.image(game.config.width, game.config.height, 'rifle').setOrigin(1)
-    this.score = 0;
-    this.scoreText = this.add.bitmapText(85, 1575, 'topaz', 'A', 80).setOrigin(.5).setTint(0xcbf7ff).setAlpha(1).setInteractive();
+    this.toggle = 0
+
+
+    this.scoreText = this.add.bitmapText(800, 1575, 'topaz', 'A', 80).setOrigin(.5).setTint(0xcbf7ff).setAlpha(1).setInteractive();
     this.scoreText.on('pointerdown', function () {
-      this.Main.toggleScope()
-      if (toggle == 0) {
-        var tween = this.tweens.add({
-          targets: this.rifle,
-          scale: 3,
-          duration: 300,
-          alpha: 0
-        })
-        toggle = 1
-      } else {
-        var tween = this.tweens.add({
-          targets: this.rifle,
-          scale: 1,
-          delay: 100,
-          duration: 300,
-          alpha: 1
-        })
-        toggle = 0
-      }
+      this.scopeToggle()
 
     }, this)
+
+    this.rifle = this.add.image(game.config.width, game.config.height, 'rifle').setOrigin(1).setInteractive()
+    this.rifle.on('pointerdown', function () {
+      this.scopeToggle()
+    }, this)
+    this.score = 0;
+
 
     this.shotText = this.add.bitmapText(450, 175, 'topaz', ',', 80).setOrigin(.5).setTint(0x000000).setAlpha(1);
 
 
-    this.fireText = this.add.bitmapText(185, 1575, 'topaz', 'F', 80).setOrigin(.5).setTint(0xcbf7ff).setAlpha(1).setInteractive();
+    this.fireText = this.add.bitmapText(650, 1150, 'topaz', 'F', 80).setOrigin(.5).setTint(0xcbf7ff).setAlpha(1);
     this.fireText.on('pointerdown', function () {
       this.shotText.setText(this.Main.player.x + ', ' + this.Main.player.y)
       this.Main.fire()
@@ -96,6 +85,29 @@ class UI extends Phaser.Scene {
 
   update() {
     this.updateJoystickState();
+  }
+  scopeToggle() {
+    this.Main.toggleScope()
+    if (this.toggle == 0) {
+      var tween = this.tweens.add({
+        targets: this.rifle,
+        scale: 3,
+        duration: 300,
+        alpha: 0
+      })
+      this.fireText.setAlpha(1).setInteractive()
+      this.toggle = 1
+    } else {
+      var tween = this.tweens.add({
+        targets: this.rifle,
+        scale: 1,
+        delay: 100,
+        duration: 300,
+        alpha: 1
+      })
+      this.fireText.setAlpha(0).disableInteractive()
+      this.toggle = 0
+    }
   }
   updateJoystickState() {
     let direction = '';
