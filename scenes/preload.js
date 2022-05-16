@@ -92,16 +92,19 @@ class preloadGame extends Phaser.Scene {
       frameWidth: 100,
       frameHeight: 100
     });
-
+    this.load.spritesheet("scope", "assets/sprites/scope5.png", {
+      frameWidth: 900,
+      frameHeight: 1640
+    });
     this.load.image('blank', 'assets/sprites/blank.png');
     //this.load.image('bg', 'assets/sprites/uv-grid-diag.png');
     this.load.image('mask', 'assets/sprites/mask1.png');
     this.load.image('bg', 'assets/sprites/bg.png');
     //this.load.image('scope', 'assets/sprites/scope2.png');
-    this.load.image('scope', 'assets/sprites/scope4.png');
-    this.load.image('sky', 'assets/sprites/skyline2.png');
+    this.load.image('scope_', 'assets/sprites/scope4.png');
+    this.load.image('sky', 'assets/sprites/skyline6.png');
     this.load.image('rifle', 'assets/sprites/rifle.png');
-    this.load.image('target', 'assets/sprites/target.png');
+    this.load.image('target', 'assets/sprites/target2.png');
 
     this.load.audio('shot', 'assets/audio/sounds_sniper_fire.mp3')
   }
