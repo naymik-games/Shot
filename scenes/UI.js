@@ -16,7 +16,8 @@ class UI extends Phaser.Scene {
     // this.header.displayWidth = 900;
     //this.header.displayHeight = 150;
     this.toggle = 0
-
+this.hits = 0
+this.shotsFired = 0
 
     this.scoreText = this.add.bitmapText(800, 1575, 'topaz', 'A', 80).setOrigin(.5).setTint(0xcbf7ff).setAlpha(1).setInteractive();
     this.scoreText.on('pointerdown', function () {
@@ -33,11 +34,13 @@ class UI extends Phaser.Scene {
 
     this.shotText = this.add.bitmapText(450, 175, 'topaz', ',', 80).setOrigin(.5).setTint(0x000000).setAlpha(1);
 
+this.hitText = this.add.bitmapText(450, 275, 'topaz', '', 80).setOrigin(.5).setTint(0xffffff).setAlpha(1);
 
     this.fireText = this.add.bitmapText(650, 1150, 'topaz', 'F', 80).setOrigin(.5).setTint(0xcbf7ff).setAlpha(1);
     this.fireText.on('pointerdown', function () {
       this.shotText.setText(this.Main.player.x + ', ' + this.Main.player.y)
       this.Main.fire()
+      this.shotsFired++
     }, this)
 
     this.staticXJsPos = 450
@@ -56,11 +59,11 @@ class UI extends Phaser.Scene {
     this.cursorKeys = this.joyStick.createCursorKeys();
     this.cursorDebugText = this.add.text(10, 300, '', { fontSize: '44px', color: '#000000' });
 
-    this.Main.events.on('score', function () {
+    this.Main.events.on('hit', function () {
 
-      this.score += 1;
+      this.hits += 1;
       //console.log('dots ' + string)
-      this.scoreText.setText(this.score)
+      this.hitText.setText(this.hits)
     }, this);
 
     /*  this.input.on('pointerdown', pointer => {

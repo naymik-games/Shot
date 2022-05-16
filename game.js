@@ -51,12 +51,12 @@ class playGame extends Phaser.Scene {
 
 
     this.target = this.add.image(13 * this.gSize, 0, 'target')
-    this.setTarget(52, 52, 3)
+    this.setTarget(50, 50, 1)
 
 
 
     this.cursors = this.input.keyboard.createCursorKeys();
-    this.spot = this.add.image(0, 0, 'particle').setTint(0xff0000).setAlpha(0)
+    this.spot = this.add.image(0, 0, 'particle').setTint(0xff0000).setAlpha(0).setScale(.5)
 
     this.player = this.physics.add.image(2100, 2100, 'scope').setScale(.5).setAlpha(.1)
 
@@ -82,7 +82,8 @@ class playGame extends Phaser.Scene {
     */
     //this.check = this.add.image(725, 1000, 'check').setScale(.7);
 
-
+this.wind = 0
+this.drop = 0
 
   }
   update() {
@@ -156,19 +157,41 @@ class playGame extends Phaser.Scene {
     })
     //this.sound.play('shot')
     this.spot.setAlpha(1)
-    this.spot.setPosition(this.player.x, this.player.y)
+    //var coo = {x: this.spot.x + 3, this.spot.y}
+    this.spot.setPosition(this.player.x + this.wind, this.player.y + this.drop)
     if (Phaser.Geom.Rectangle.ContainsPoint(this.rect, this.spot)) {
       console.log('HIT')
-      this.setTarget(56, 52)
+      this.addHit()
+      var tween = this.tweens.add({
+        targets: this.target,
+        scaleY:0,
+        yoyo: true,
+        duration:50,
+        callbackScope: this,
+        onComplete: function(){
+          var col = Phaser.Math.Between(5, 100)
+          var row = Phaser.Math.Between(50, 100)
+          this.setTarget(col, row, 2)
+        }
+      })
+      
+      
     }
 
   }
   movePlayer(direction, force) {
-    if (force > 50) {
+    if (this.cameras.main.zoom == 3) {
+      this.playerSpeed = 1
+
+} else {
+  
+
+    if (force > 90) {
       this.playerSpeed = 10
     } else {
       this.playerSpeed = 1
     }
+}
     if (direction === "up") {
       this.player.y -= this.playerSpeed;
 
@@ -202,7 +225,7 @@ class playGame extends Phaser.Scene {
       this.player.y = 0;
     }
   }
-  addScore() {
-    this.events.emit('score');
+  addHit() {
+    this.events.emit('hit');
   }
 }
