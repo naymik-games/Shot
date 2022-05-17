@@ -66,7 +66,7 @@ class playGame extends Phaser.Scene {
     //this.target = new Target(this, 13 * this.gSize, 0, 'target')
     //  this.setTarget(50, 50, 1)
 
-    var positions = [{ col: 96, row: 156 }, { col: 104, row: 12 }, { col: 172, row: 160 }, { col: 136, row: 148 }, { col: 60, row: 56 }, { col: 184, row: 188 }, { col: 97, row: 156 }]
+    var positions = [{ col: 88, row: 60 }, { col: 120, row: 24 }, { col: 64, row: 8 }, { col: 44, row: 68 }, { col: 12, row: 144 }, { col: 32, row: 192 }, { col: 172, row: 160 }, { col: 136, row: 124 }, { col: 100, row: 108 }, { col: 172, row: 60 }, { col: 124, row: 52 },]
     this.targetCount = positions.length
     //var positions = [{ col: 27, row: 33 }, { col: 60, row: 30 }, { col: 84, row: 12 }, { col: 45, row: 57 }, { col: 45, row: 0 }, { col: 87, row: 30 }, { col: 0, row: 27 },]
     for (var i = 0; i < positions.length; i++) {
