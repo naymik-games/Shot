@@ -102,9 +102,10 @@ class preloadGame extends Phaser.Scene {
     this.load.image('bg', 'assets/sprites/bg.png');
     //this.load.image('scope', 'assets/sprites/scope2.png');
     this.load.image('scope_', 'assets/sprites/scope4.png');
-    this.load.image('sky', 'assets/sprites/skyline6.png');
+    this.load.image('sky', 'assets/sprites/skyline7.png');
     this.load.image('rifle', 'assets/sprites/rifle.png');
     this.load.image('target', 'assets/sprites/target2.png');
+    this.load.image('bullet', 'assets/sprites/bullet.png');
 
     this.load.audio('shot', 'assets/audio/sounds_sniper_fire.mp3')
   }

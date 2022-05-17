@@ -12,15 +12,18 @@ class UI extends Phaser.Scene {
   }
   create() {
     this.Main = this.scene.get('playGame');
-    this.header = this.add.image(game.config.width / 2, 0, 'blank').setOrigin(.5, 0).setTint(0x000000).setAlpha(.8);
+    this.header = this.add.image(game.config.width / 2, 0, 'blank').setOrigin(.5, 0).setTint(0x000000).setAlpha(.5);
     this.header.displayWidth = 900;
     this.header.displayHeight = 150;
     this.toggle = 0
     this.hits = 0
     this.shotsFired = 0
-
-    this.scoreText = this.add.bitmapText(800, 1575, 'topaz', 'A', 80).setOrigin(.5).setTint(0xcbf7ff).setAlpha(1).setInteractive();
-    this.scoreText.on('pointerdown', function () {
+    this.clipCount = 3
+    this.clip = []
+    this.ammoBox = []
+    this.canFire = true
+    this.aimText = this.add.bitmapText(800, 1575, 'topaz', 'A', 80).setOrigin(.5).setTint(0xcbf7ff).setAlpha(1).setInteractive();
+    this.aimText.on('pointerdown', function () {
       this.scopeToggle()
 
     }, this)
@@ -38,20 +41,63 @@ class UI extends Phaser.Scene {
     this.guideTextGroup.add(minusText)
     this.guideTextGroup.setAlpha(0)
 
-    this.shotText = this.add.bitmapText(450, 175, 'topaz', ',', 80).setOrigin(.5).setTint(0x000000).setAlpha(1);
-
-    this.hitText = this.add.bitmapText(450, 75, 'topaz', '', 80).setOrigin(.5).setTint(0xffffff).setAlpha(1);
+    //this.shotText = this.add.bitmapText(450, 175, 'topaz', ',', 80).setOrigin(.5).setTint(0x000000).setAlpha(1);
+    this.scoreText = this.add.bitmapText(450, 40, 'topaz', '0', 40).setOrigin(.5).setTint(0xffffff).setAlpha(1);
+    this.hitText = this.add.bitmapText(450, 110, 'topaz', '', 40).setOrigin(.5).setTint(0xffffff).setAlpha(1);
 
     this.windText = this.add.bitmapText(15, 75, 'topaz', '--', 80).setOrigin(0, .5).setTint(0xffffff).setAlpha(1);
-
-    this.fireText = this.add.bitmapText(650, 1150, 'topaz', 'F', 80).setOrigin(.5).setTint(0xcbf7ff).setAlpha(1);
+    this.distanceEstimateText = this.add.bitmapText(885, 75, 'topaz', '--', 80).setOrigin(1, .5).setTint(0xffffff).setAlpha(1);
+    this.fireText = this.add.bitmapText(650, 1150, 'topaz', 'F', 80).setOrigin(.5).setTint(0xcbf7ff).setAlpha(0);
     this.fireText.on('pointerdown', function () {
-      this.shotText.setText(this.Main.player.x + ', ' + this.Main.player.y)
+      if (!this.canFire) { return }
+      this.distance = 0;
+      this.distanceText.setText(this.distance)
+      this.windAdjust = 0
+      this.windSetText.setText(this.windAdjust)
+      //this.shotText.setText(this.Main.player.x + ', ' + this.Main.player.y)
       this.shotsFired++
       this.hitText.setText(this.hits + '/' + this.shotsFired)
       this.Main.fire(this.distance)
 
+      var bullet = this.clip.pop()
+      bullet.setAlpha(0)
+      this.ammoBox.push(bullet)
+      if (this.clip.length == 0) {
+        this.canFire = false
+        this.fireText.setAlpha(.2)
+      }
     }, this)
+
+
+    this.reloadText = this.add.bitmapText(250, 1150, 'topaz', 'R', 80).setOrigin(.5).setTint(0xcbf7ff).setAlpha(0);
+    this.reloadText.on('pointerdown', function () {
+      if (this.clip.length == this.clipCount) { return }
+      var tween = this.tweens.add({
+        targets: this.Main.player,
+        y: '-=100',
+        yoyo: true,
+        duration: 300
+      })
+      for (var i = this.clip.length; i < this.clipCount; i++) {
+
+        var bullet = this.ammoBox.pop()
+        bullet.setPosition(50 + i * 25, 1525).setAlpha(1)
+        this.clip.push(bullet)
+
+      }
+
+      this.canFire = true
+      this.fireText.setAlpha(1)
+
+    }, this)
+
+    for (var i = 0; i < this.clipCount; i++) {
+      console.log('bullet')
+      var bullet = this.add.image(50 + i * 25, 1525, 'bullet').setScale(.8)
+      this.clip.push(bullet)
+
+    }
+
 
     //distance set
     this.distance = 0
@@ -73,6 +119,26 @@ class UI extends Phaser.Scene {
     this.distanceContainer.add(distanceUpText)
     this.distanceContainer.setAlpha(0)
 
+
+    //WIND SET
+    this.windAdjust = 0
+    this.windContainer = this.add.container()
+    var windLeftText = this.add.bitmapText(game.config.width / 2 - 100, game.config.height / 2 - 450, 'topaz', 'L', 80).setOrigin(.5).setTint(0xffffff).setAlpha(1).setInteractive();
+    windLeftText.on('pointerdown', function () {
+      this.changeWind('left')
+    }, this)
+    this.windSetText = this.add.bitmapText(game.config.width / 2, game.config.height / 2 - 450, 'topaz', this.windAdjust, 60).setOrigin(.5).setTint(0xffffff).setAlpha(1);
+    var windRightText = this.add.bitmapText(game.config.width / 2 + 100, game.config.height / 2 - 450, 'topaz', 'R', 80).setOrigin(.5).setTint(0xffffff).setAlpha(1).setInteractive();
+    windRightText.on('pointerdown', function () {
+      this.changeWind('right')
+    }, this)
+    this.windContainer.add(this.windSetText)
+    this.windContainer.add(windLeftText)
+    this.windContainer.add(windRightText)
+    this.windContainer.setAlpha(0)
+
+
+
     this.staticXJsPos = 450
     this.staticYJsPos = 1200
     this.joyStick = this.plugins.get('rexvirtualjoystickplugin').add(this, {
@@ -89,11 +155,16 @@ class UI extends Phaser.Scene {
     this.cursorKeys = this.joyStick.createCursorKeys();
     this.cursorDebugText = this.add.text(10, 300, '', { fontSize: '44px', color: '#000000' }).setAlpha(0);
 
-    this.Main.events.on('hit', function () {
-
+    this.Main.events.on('hit', function (data) {
+      console.log('acc ' + data.acc + ', dist ' + this.distanceFinal)
       this.hits += 1;
       //console.log('dots ' + string)
+      this.score += Math.floor((10 * this.distanceFinal) - data.acc)
+      this.scoreText.setText(this.score)
       this.hitText.setText(this.hits + '/' + this.shotsFired)
+      if (this.hits == this.Main.targetCount) {
+        alert('All Targets Dropped')
+      }
     }, this);
 
     /*  this.input.on('pointerdown', pointer => {
@@ -127,13 +198,29 @@ class UI extends Phaser.Scene {
       var windT = '0'
     }
     this.windText.setText(windT)
+    var row = Math.floor(this.Main.player.y / this.Main.gSize)
+    this.distanceFinal = this.Main.rows - row
+    this.distanceEstimateText.setText(this.distanceFinal)
+  }
+  changeWind(dir) {
+    if (dir == 'left') {
+      this.Main.player.x -= 1
+      this.windAdjust -= 1
+      this.windSetText.setText(this.windAdjust)
+    } else {
+      this.Main.player.x += 1
+      this.windAdjust += 1
+      this.windSetText.setText(this.windAdjust)
+    }
   }
   changeDistance(dir) {
     if (dir == 'raise') {
-      this.distance += .5
+      this.Main.player.y += 1
+      this.distance += 1
       this.distanceText.setText(this.distance)
     } else {
-      this.distance -= .5
+      this.Main.player.y -= 1
+      this.distance -= 1
       this.distanceText.setText(this.distance)
     }
   }
@@ -147,8 +234,10 @@ class UI extends Phaser.Scene {
         alpha: 0
       })
       this.fireText.setAlpha(1).setInteractive()
+      this.reloadText.setAlpha(1).setInteractive()
       this.guideTextGroup.setAlpha(1)
       this.distanceContainer.setAlpha(1)
+      this.windContainer.setAlpha(1)
       this.toggle = 1
     } else {
       var tween = this.tweens.add({
@@ -160,7 +249,9 @@ class UI extends Phaser.Scene {
       })
       this.guideTextGroup.setAlpha(0)
       this.fireText.setAlpha(0).disableInteractive()
+      this.reloadText.setAlpha(0).disableInteractive()
       this.distanceContainer.setAlpha(0)
+      this.windContainer.setAlpha(0)
       this.toggle = 0
     }
   }
